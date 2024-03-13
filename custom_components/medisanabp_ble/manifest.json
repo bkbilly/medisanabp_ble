@@ -1,9 +1,6 @@
 {
   "domain": "medisanabp_ble",
   "name": "Medisana Blood Pressure BLE",
-  "config_flow": true,
-  "documentation": "https://github.com/bkbilly/medisanabp_ble",
-  "issue_tracker": "https://github.com/bkbilly/medisanabp_ble/issues",
   "bluetooth": [
     {
       "manufacturer_id": 18498,
@@ -11,8 +8,11 @@
     }
   ],
   "codeowners": ["@bkbilly"],
-  "iot_class": "local_push",
+  "config_flow": true,
   "dependencies": ["bluetooth_adapters"],
+  "documentation": "https://github.com/bkbilly/medisanabp_ble",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/bkbilly/medisanabp_ble/issues",
   "requirements": [],
   "version": "0.1.0"
 }
