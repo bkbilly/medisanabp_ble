@@ -121,7 +121,7 @@ async def async_setup_entry(
 
 
 class MedisanaBPBluetoothSensorEntity(
-    PassiveBluetoothProcessorEntity[PassiveBluetoothDataProcessor[str | int | None]],
+    PassiveBluetoothProcessorEntity,
     SensorEntity,
 ):
     """Representation of a MedisanaBP sensor."""
