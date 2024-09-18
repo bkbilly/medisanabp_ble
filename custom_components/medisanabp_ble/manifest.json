@@ -5,6 +5,9 @@
     {
       "manufacturer_id": 18498,
       "connectable": true
+    },
+    {
+      "local_name": "1872B"
     }
   ],
   "codeowners": ["@bkbilly"],
