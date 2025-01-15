@@ -1,4 +1,4 @@
-"""Config flow for MedisanaBP BLE integration."""
+"""Config flow for SilvercrestBP BLE integration."""
 
 from __future__ import annotations
 
@@ -14,19 +14,19 @@ from homeassistant.config_entries import ConfigFlow
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.const import CONF_ADDRESS
 
-from .medisana_bp import MedisanaBPBluetoothDeviceData
+from .silvercrest_bp import SilvercrestBPBluetoothDeviceData
 from .const import DOMAIN
 
 
-class MedisanaBPConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for MedisanaBP."""
+class SilvercrestBPConfigFlow(ConfigFlow, domain=DOMAIN):
+    """Handle a config flow for SilvercrestBP."""
 
     VERSION = 1
 
     def __init__(self) -> None:
         """Initialize the config flow."""
         self._discovery_info: BluetoothServiceInfoBleak | None = None
-        self._discovered_device: MedisanaBPBluetoothDeviceData | None = None
+        self._discovered_device: SilvercrestBPBluetoothDeviceData | None = None
         self._discovered_devices: dict[str, str] = {}
 
     async def async_step_bluetooth(
@@ -35,7 +35,7 @@ class MedisanaBPConfigFlow(ConfigFlow, domain=DOMAIN):
         """Handle the bluetooth discovery step."""
         await self.async_set_unique_id(discovery_info.address)
         self._abort_if_unique_id_configured()
-        device = MedisanaBPBluetoothDeviceData()
+        device = SilvercrestBPBluetoothDeviceData()
         if not device.supported(discovery_info):
             return self.async_abort(reason="not_supported")
         self._discovery_info = discovery_info
@@ -78,7 +78,7 @@ class MedisanaBPConfigFlow(ConfigFlow, domain=DOMAIN):
             address = discovery_info.address
             if address in current_addresses or address in self._discovered_devices:
                 continue
-            device = MedisanaBPBluetoothDeviceData()
+            device = SilvercrestBPBluetoothDeviceData()
             if device.supported(discovery_info):
                 self._discovered_devices[address] = (
                     device.title or device.get_device_name() or discovery_info.name

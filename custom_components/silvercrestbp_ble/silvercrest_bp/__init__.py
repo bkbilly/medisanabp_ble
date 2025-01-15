@@ -1,4 +1,4 @@
-"""Parser for MedisanaBP BLE advertisements"""
+"""Parser for SilvercrestBP BLE advertisements"""
 from __future__ import annotations
 
 from sensor_state_data import (
@@ -13,13 +13,13 @@ from sensor_state_data import (
     Units,
 )
 
-from .parser import MedisanaBPBluetoothDeviceData, MedisanaBPSensor
+from .parser import SilvercrestBPBluetoothDeviceData, SilvercrestBPSensor
 
 __version__ = "0.1.0"
 
 __all__ = [
-    "MedisanaBPSensor",
-    "MedisanaBPBluetoothDeviceData",
+    "SilvercrestBPSensor",
+    "SilvercrestBPBluetoothDeviceData",
     "BinarySensorDeviceClass",
     "DeviceKey",
     "SensorUpdate",

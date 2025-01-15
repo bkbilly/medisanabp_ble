@@ -18,25 +18,25 @@ from sensor_state_data.enum import StrEnum
 
 from .const import (
     CHARACTERISTIC_BLOOD_PRESSURE,
-    CHARACTERISTIC_BATTERY,
+    # CHARACTERISTIC_BATTERY,
     UPDATE_INTERVAL,
 )
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class MedisanaBPSensor(StrEnum):
+class SilvercrestBPSensor(StrEnum):
 
     SYSTOLIC = "systolic"
     DIASTOLIC = "diastolic"
     PULSE = "pulse"
     SIGNAL_STRENGTH = "signal_strength"
-    BATTERY_PERCENT = "battery_percent"
+    # BATTERY_PERCENT = "battery_percent"
     TIMESTAMP = "timestamp"
 
 
-class MedisanaBPBluetoothDeviceData(BluetoothData):
-    """Data for MedisanaBP BLE sensors."""
+class SilvercrestBPBluetoothDeviceData(BluetoothData):
+    """Data for SilvercrestBP BLE sensors."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -44,8 +44,8 @@ class MedisanaBPBluetoothDeviceData(BluetoothData):
 
     def _start_update(self, service_info: BluetoothServiceInfo) -> None:
         """Update from BLE advertisement data."""
-        _LOGGER.debug("Parsing MedisanaBP BLE advertisement data: %s", service_info)
-        self.set_device_manufacturer("Medisana")
+        _LOGGER.debug("Parsing SilvercrestBP BLE advertisement data: %s", service_info)
+        self.set_device_manufacturer("Silvercrest")
         self.set_device_type("Blood Pressure Measurement")
         name = f"{service_info.name} {short_address(service_info.address)}"
         self.set_device_name(name)
@@ -78,7 +78,7 @@ class MedisanaBPBluetoothDeviceData(BluetoothData):
             date = datetime.strptime(datetime_str, '%Y/%m/%d %H:%M')
             local_timezone = datetime.now(timezone.utc).astimezone().tzinfo
             self.update_sensor(
-                key=str(MedisanaBPSensor.TIMESTAMP),
+                key=str(SilvercrestBPSensor.TIMESTAMP),
                 native_unit_of_measurement=None,
                 native_value=date.replace(tzinfo=local_timezone),
                 name="Measured Date",
@@ -91,21 +91,21 @@ class MedisanaBPBluetoothDeviceData(BluetoothData):
             syst, diast, puls)
 
         self.update_sensor(
-            key=str(MedisanaBPSensor.SYSTOLIC),
+            key=str(SilvercrestBPSensor.SYSTOLIC),
             native_unit_of_measurement=Units.PRESSURE_MMHG,
             native_value=syst,
             device_class=SensorDeviceClass.PRESSURE,
             name="Systolic",
         )
         self.update_sensor(
-            key=str(MedisanaBPSensor.DIASTOLIC),
+            key=str(SilvercrestBPSensor.DIASTOLIC),
             native_unit_of_measurement=Units.PRESSURE_MMHG,
             native_value=diast,
             device_class=SensorDeviceClass.PRESSURE,
             name="Diastolic",
         )
         self.update_sensor(
-            key=str(MedisanaBPSensor.PULSE),
+            key=str(SilvercrestBPSensor.PULSE),
             native_unit_of_measurement="bpm",
             native_value=puls,
             name="Pulse",
@@ -128,15 +128,15 @@ class MedisanaBPBluetoothDeviceData(BluetoothData):
         except:
             _LOGGER.warn("Notify Bleak error")
 
-        battery_char = client.services.get_characteristic(CHARACTERISTIC_BATTERY)
-        battery_payload = await client.read_gatt_char(battery_char)
-        self.update_sensor(
-            key=str(MedisanaBPSensor.BATTERY_PERCENT),
-            native_unit_of_measurement=Units.PERCENTAGE,
-            native_value=battery_payload[0],
-            device_class=SensorDeviceClass.BATTERY,
-            name="Battery",
-        )
+        # battery_char = client.services.get_characteristic(CHARACTERISTIC_BATTERY)
+        # battery_payload = await client.read_gatt_char(battery_char)
+        # self.update_sensor(
+        #     key=str(SilvercrestBPSensor.BATTERY_PERCENT),
+        #     native_unit_of_measurement=Units.PERCENTAGE,
+        #     native_value=battery_payload[0],
+        #     device_class=SensorDeviceClass.BATTERY,
+        #     name="Battery",
+        # )
 
         # Wait to see if a callback comes in.
         try:

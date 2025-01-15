@@ -1,8 +1,8 @@
-"""Support for MedisanaBP sensors."""
+"""Support for SilvercrestBP sensors."""
 
 from __future__ import annotations
 
-from .medisana_bp import MedisanaBPSensor, SensorUpdate
+from .silvercrest_bp import SilvercrestBPSensor, SensorUpdate
 
 from homeassistant import config_entries
 from homeassistant.components.bluetooth.passive_update_processor import (
@@ -33,40 +33,40 @@ from .const import DOMAIN
 
 
 SENSOR_DESCRIPTIONS: dict[str, SensorEntityDescription] = {
-    MedisanaBPSensor.SYSTOLIC: SensorEntityDescription(
-        key=MedisanaBPSensor.SYSTOLIC,
+    SilvercrestBPSensor.SYSTOLIC: SensorEntityDescription(
+        key=SilvercrestBPSensor.SYSTOLIC,
         native_unit_of_measurement=UnitOfPressure.MMHG,
         device_class=SensorDeviceClass.PRESSURE,
         icon="mdi:water-minus",
     ),
-    MedisanaBPSensor.DIASTOLIC: SensorEntityDescription(
-        key=MedisanaBPSensor.DIASTOLIC,
+    SilvercrestBPSensor.DIASTOLIC: SensorEntityDescription(
+        key=SilvercrestBPSensor.DIASTOLIC,
         native_unit_of_measurement=UnitOfPressure.MMHG,
         device_class=SensorDeviceClass.PRESSURE,
         icon="mdi:water-plus",
     ),
-    MedisanaBPSensor.PULSE: SensorEntityDescription(
-        key=MedisanaBPSensor.PULSE,
+    SilvercrestBPSensor.PULSE: SensorEntityDescription(
+        key=SilvercrestBPSensor.PULSE,
         native_unit_of_measurement="bpm",
         icon="mdi:heart-flash",
     ),
-    MedisanaBPSensor.SIGNAL_STRENGTH: SensorEntityDescription(
-        key=MedisanaBPSensor.SIGNAL_STRENGTH,
+    SilvercrestBPSensor.SIGNAL_STRENGTH: SensorEntityDescription(
+        key=SilvercrestBPSensor.SIGNAL_STRENGTH,
         device_class=SensorDeviceClass.SIGNAL_STRENGTH,
         native_unit_of_measurement=SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
         state_class=SensorStateClass.MEASUREMENT,
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
     ),
-    MedisanaBPSensor.BATTERY_PERCENT: SensorEntityDescription(
-        key=MedisanaBPSensor.BATTERY_PERCENT,
-        device_class=SensorDeviceClass.BATTERY,
-        native_unit_of_measurement=PERCENTAGE,
-        state_class=SensorStateClass.MEASUREMENT,
-        entity_category=EntityCategory.DIAGNOSTIC,
-    ),
-    MedisanaBPSensor.TIMESTAMP: SensorEntityDescription(
-        key=MedisanaBPSensor.TIMESTAMP,
+    # SilvercrestBPSensor.BATTERY_PERCENT: SensorEntityDescription(
+    #     key=SilvercrestBPSensor.BATTERY_PERCENT,
+    #     device_class=SensorDeviceClass.BATTERY,
+    #     native_unit_of_measurement=PERCENTAGE,
+    #     state_class=SensorStateClass.MEASUREMENT,
+    #     entity_category=EntityCategory.DIAGNOSTIC,
+    # ),
+    SilvercrestBPSensor.TIMESTAMP: SensorEntityDescription(
+        key=SilvercrestBPSensor.TIMESTAMP,
         device_class=SensorDeviceClass.TIMESTAMP,
         icon="mdi:clock-time-four-outline",
     ),
@@ -105,14 +105,14 @@ async def async_setup_entry(
     entry: config_entries.ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up the MedisanaBP BLE sensors."""
+    """Set up the SilvercrestBP BLE sensors."""
     coordinator: PassiveBluetoothProcessorCoordinator = hass.data[DOMAIN][
         entry.entry_id
     ]
     processor = PassiveBluetoothDataProcessor(sensor_update_to_bluetooth_data_update)
     entry.async_on_unload(
         processor.async_add_entities_listener(
-            MedisanaBPBluetoothSensorEntity, async_add_entities
+            SilvercrestBPBluetoothSensorEntity, async_add_entities
         )
     )
     entry.async_on_unload(
@@ -120,11 +120,11 @@ async def async_setup_entry(
     )
 
 
-class MedisanaBPBluetoothSensorEntity(
+class SilvercrestBPBluetoothSensorEntity(
     PassiveBluetoothProcessorEntity,
     SensorEntity,
 ):
-    """Representation of a MedisanaBP sensor."""
+    """Representation of a SilvercrestBP sensor."""
 
     @property
     def native_value(self) -> str | int | None:

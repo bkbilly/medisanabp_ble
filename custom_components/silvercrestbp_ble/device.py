@@ -1,8 +1,8 @@
-"""Constants for MedisanaBP BLE."""
+"""Constants for SilvercrestBP BLE."""
 
 from __future__ import annotations
 
-from .medisana_bp import DeviceKey
+from .silvercrest_bp import DeviceKey
 
 from homeassistant.components.bluetooth.passive_update_processor import (
     PassiveBluetoothEntityKey,

@@ -1,4 +1,4 @@
-"""The MedisanaBP integration."""
+"""The SilvercrestBP integration."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import CoreState, HomeAssistant
 
-from .medisana_bp import MedisanaBPBluetoothDeviceData, SensorUpdate
+from .silvercrest_bp import SilvercrestBPBluetoothDeviceData, SensorUpdate
 from .const import DOMAIN
 
 PLATFORMS: list[Platform] = [Platform.SENSOR]
@@ -26,10 +26,10 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up MedisanaBP BLE device from a config entry."""
+    """Set up SilvercrestBP BLE device from a config entry."""
     address = entry.unique_id
     assert address is not None
-    data = MedisanaBPBluetoothDeviceData()
+    data = SilvercrestBPBluetoothDeviceData()
 
     def _needs_poll(
         service_info: BluetoothServiceInfoBleak, last_poll: float | None
