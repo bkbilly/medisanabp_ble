@@ -85,6 +85,7 @@ class MedisanaBPBluetoothDeviceData(BluetoothData):
             )
         except:
             _LOGGER.error("Can't add Measured Date")
+            return
 
         _LOGGER.info(
             "Got data from BPM device (syst: %s, diast: %s, puls: %s)",
