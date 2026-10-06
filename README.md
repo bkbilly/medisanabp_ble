@@ -13,6 +13,7 @@ Exposes the following sensors:
  - Pulses
  - Measured date
  - User
+ - Systolic, Diastolic, Pulse and Measured date for user 2 (devices with two user memories)
 
 ## Installation
 

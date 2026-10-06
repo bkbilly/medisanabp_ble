@@ -79,6 +79,31 @@ SENSOR_DESCRIPTIONS: dict[str, SensorEntityDescription] = {
         key=MedisanaBPSensor.USER,
         icon="mdi:account",
     ),
+    MedisanaBPSensor.SYSTOLIC_2: SensorEntityDescription(
+        key=MedisanaBPSensor.SYSTOLIC_2,
+        native_unit_of_measurement=UnitOfPressure.MMHG,
+        device_class=SensorDeviceClass.PRESSURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:water-minus",
+    ),
+    MedisanaBPSensor.DIASTOLIC_2: SensorEntityDescription(
+        key=MedisanaBPSensor.DIASTOLIC_2,
+        native_unit_of_measurement=UnitOfPressure.MMHG,
+        device_class=SensorDeviceClass.PRESSURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:water-plus",
+    ),
+    MedisanaBPSensor.PULSE_2: SensorEntityDescription(
+        key=MedisanaBPSensor.PULSE_2,
+        native_unit_of_measurement="bpm",
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:heart-flash",
+    ),
+    MedisanaBPSensor.TIMESTAMP_2: SensorEntityDescription(
+        key=MedisanaBPSensor.TIMESTAMP_2,
+        device_class=SensorDeviceClass.TIMESTAMP,
+        icon="mdi:clock-time-four-outline",
+    ),
 
 }
 
