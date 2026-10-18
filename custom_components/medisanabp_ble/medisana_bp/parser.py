@@ -72,6 +72,9 @@ class MedisanaBPBluetoothDeviceData(BluetoothData):
         self._has_data = False
         self._last_poll_successful = False
         self._records: list[dict] = []
+        # All records of the last poll, also the older ones that are not written to the
+        # sensors (e.g. a measurement that stayed on the device after a failed poll).
+        self.last_records: list[dict] = []
 
     def _start_update(self, service_info: BluetoothServiceInfo) -> None:
         """Update from BLE advertisement data."""
@@ -398,6 +401,7 @@ class MedisanaBPBluetoothDeviceData(BluetoothData):
         self._event.clear()
         self._has_data = False
         self._records = []
+        self.last_records = []
         self._last_poll_successful = False
         subscribed = False
 
@@ -468,6 +472,7 @@ class MedisanaBPBluetoothDeviceData(BluetoothData):
                 "Disconnected from active bluetooth client: %s", ble_device.address
             )
 
+        self.last_records = list(self._records)
         self._apply_latest_record()
         # A poll counts as successful once the device answered, even if it had no
         # new record; otherwise every following advertisement would poll again.
