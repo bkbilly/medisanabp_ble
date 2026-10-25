@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 
 
+from homeassistant.components import bluetooth
 from homeassistant.components.bluetooth import (
     BluetoothScanningMode,
     BluetoothServiceInfoBleak,
@@ -22,6 +23,11 @@ from .const import DOMAIN
 
 PLATFORMS: list[Platform] = [Platform.SENSOR]
 
+# One event per stored record of a poll. The sensors only show the newest record of
+# each user; an older one (left on the device after a failed poll) would otherwise be
+# lost. Automations can store those records from this event.
+EVENT_RECORD = f"{DOMAIN}_record"
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -31,12 +37,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     assert address is not None
     data = MedisanaBPBluetoothDeviceData()
 
+    def _clear_advertisement_history() -> None:
+        # The device sends the same advertisement every time it wakes up after a
+        # measurement. The Bluetooth manager only forwards changed advertisements,
+        # so without this only the first measurement after a longer pause would
+        # trigger a poll. The helper exists since Home Assistant 2026.5.
+        if clear := getattr(bluetooth, "async_clear_advertisement_history", None):
+            clear(hass, address)
+
     def _needs_poll(
         service_info: BluetoothServiceInfoBleak, last_poll: float | None
     ) -> bool:
         # Only poll if hass is running, we need to poll,
         # and we actually have a way to connect to the device
-        return (
+        needs_poll = (
             hass.state is CoreState.running
             and data.poll_needed(service_info, last_poll)
             and bool(
@@ -46,6 +60,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 )
             )
         )
+        if not needs_poll:
+            _clear_advertisement_history()
+        return needs_poll
 
     async def _async_poll(service_info: BluetoothServiceInfoBleak) -> SensorUpdate:
         # BluetoothServiceInfoBleak is defined in HA, otherwise would just pass it
@@ -64,13 +81,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             raise RuntimeError(
                 f"No connectable device found for {service_info.device.address}"
             )
-        return await data.async_poll(
-            connectable_device,
-            ble_device_callback=lambda: async_ble_device_from_address(
-                hass, service_info.device.address, True
+        try:
+            update = await data.async_poll(
+                connectable_device,
+                ble_device_callback=lambda: async_ble_device_from_address(
+                    hass, service_info.device.address, True
+                )
+                or connectable_device,
             )
-            or connectable_device,
-        )
+        finally:
+            _clear_advertisement_history()
+        _fire_record_events(hass, address, data.last_records)
+        return update
 
     coordinator = hass.data.setdefault(DOMAIN, {})[
         entry.entry_id
@@ -93,6 +115,31 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         coordinator.async_start()
     )
     return True
+
+
+def _fire_record_events(hass: HomeAssistant, address: str, records: list[dict]) -> None:
+    """Fire EVENT_RECORD for every record of the last poll, per user, newest flagged."""
+    for user_id in (1, 2):
+        own = [r for r in records if (r["user"] == 2) == (user_id == 2)]
+        if not own:
+            continue
+        newest = MedisanaBPBluetoothDeviceData._select_latest(own)
+        for record in own:
+            hass.bus.async_fire(
+                EVENT_RECORD,
+                {
+                    "address": address,
+                    "user": user_id,
+                    "systolic": record["syst"],
+                    "diastolic": record["diast"],
+                    "pulse": record["puls"],
+                    "measured": record["date"].isoformat() if record["date"] else None,
+                    "newest": record is newest,
+                    "newest_measured": newest["date"].isoformat()
+                    if newest["date"]
+                    else None,
+                },
+            )
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
